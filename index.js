@@ -126,3 +126,47 @@ const askForDepartmentAction = () => {
             }
         });
 }
+// Takes a message, property name, and object array to create a list question
+const constructListQuestion = (message, name, objArray) => {
+    return {
+        type: "list",
+        message: message,
+        name: name,
+        choices: objArray
+    };
+}
+// View the data on the 'role' table joined with department table 
+const selectRoleTable = async () => {
+    try {
+        const table = await db.query(queries.roles); 
+        viewTable(table);
+        return askForCategory();
+    } catch (err) {
+        console.log(err);
+    }
+}
+// Adding a role to database
+const addRole = async () => {
+    try {
+        const deptTable = await db.query(queries.departments); 
+        let deptArray = deptTable.map(dept => ({
+            name: dept.name,
+            value: dept.id
+        }));
+        questions.addRole.push(constructListQuestion("Choose a department for this role", "department", deptArray));
+    } catch (err) {
+        console.log(err);
+    }
+    inquirer
+        .prompt(questions.addRole)
+        .then(async (addRoleAnswers) => {
+            const { title, salary, department } = addRoleAnswers;
+            try {
+                await db.query(queries.insertRole, [title, salary, department]);
+                console.log('\x1b[32m', `Added ${title} to the database.`, '\x1b[0m');
+                return askForCategory();
+            } catch (err) {
+                console.log(err);
+            }
+        });    
+}
