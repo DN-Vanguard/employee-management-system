@@ -170,7 +170,7 @@ const addRole = async () => {
             }
         });    
 }
-// Remove a role
+// Removing a role
 const deleteRole = async () => {
     let chooseRoleQuestions  = [];
     try {
@@ -276,6 +276,110 @@ const selectEmployeeDepartmentTable = async () => {
                 } else {
                     viewTable(table);
                 }
+                return askForCategory();
+            } catch (err) {
+                console.log(err);
+            }
+        });
+}
+
+// Add a new employee to database
+const addEmployee = async () => {
+    try {
+        const roleTable = await db.query(queries.roles); 
+        let roleArray = roleTable.map(role => ({
+            name: role.title,
+            value: role.id
+        }));
+        questions.addEmployee.push(constructListQuestion("Choose a role for this employee", "role", roleArray));
+    } catch (err) {
+        console.log(err);
+    }
+    try {
+        const managerTable = await db.query(queries.managers);
+        let managerArray = managerTable.map(manager => ({
+            name: manager.name,
+            value: manager.id
+        }));
+        managerArray.push({
+            name: "No Manager",
+            value: null
+        });
+        questions.addEmployee.push(constructListQuestion("Choose a manager for this employee", "manager", managerArray));
+    } catch (err) {
+        console.log(err);
+    }
+    inquirer
+        .prompt(questions.addEmployee)
+        .then(async (addEmployeeAnswers) => {
+            const { first_name, last_name, role, manager } = addEmployeeAnswers;
+            try {
+                await db.query(queries.insertEmployee, [first_name, last_name, role, manager]); 
+                console.log('\x1b[32m', `Added ${first_name} ${last_name} to the database.`, '\x1b[0m');
+                return askForCategory();
+            } catch (err) {
+                console.log(err);
+            }
+        });    
+}
+// Updates an employee's role
+const updateEmployeeRole = async () => {
+    let updateEmployeeRoleQuestions = [];
+    try {
+        const employeeTable = await db.query(queries.employeesByRole); 
+        let employeeArray = employeeTable.map(employee => ({
+            name: employee.name,
+            value: employee.id
+        }));
+        updateEmployeeRoleQuestions.push(constructListQuestion("Choose an employee to update thier role", "employee", employeeArray));
+    } catch (err) {
+        console.log(err);
+    }
+    try {
+        const roleTable = await db.query(queries.roles); 
+        let roleArray = roleTable.map(role => ({
+            name: role.title,
+            value: role.id
+        }));
+        updateEmployeeRoleQuestions.push(constructListQuestion("Choose a new role for this employee", "role", roleArray));
+    } catch (err) {
+        console.log(err);
+    }
+    inquirer
+        .prompt(updateEmployeeRoleQuestions)
+        .then(async (updateEmployeeAnswers) => {
+            const { role, employee } = updateEmployeeAnswers;
+            try {
+                await db.query(queries.updateEmployee('role'), [role, employee]);
+                console.log('\x1b[32m', `Updated employee's role in the database.`, '\x1b[0m');
+                return askForCategory();
+            } catch (err) {
+                console.log(err);
+            }
+        });
+}
+// Updates an employee's manager
+const updateEmployeeManager = async () => {
+    let updateEmployeeManagerQuestions = [];
+    try {
+        const employeeTable = await db.query(queries.employeesByRole); 
+        let employeeArray = employeeTable.map(employee => ({
+            name: employee.name,
+            value: employee.id
+        }));
+        updateEmployeeManagerQuestions.push(constructListQuestion("Choose an employee to update thier manager", "employee", employeeArray));
+        updateEmployeeManagerQuestions.push(constructListQuestion("Choose a new manager for this employee. (Choosing the same employee sets the manager to no one)", "manager", employeeArray));
+    } catch (err) {
+        console.log(err);
+    }
+    inquirer
+        .prompt(updateEmployeeManagerQuestions)
+        .then(async (updateEmployeeAnswers) => {
+            let { manager, employee } = updateEmployeeAnswers;
+            if( manager === employee ) manager = null;
+            try {
+                await db.query(queries.updateEmployee('manager'), [manager, employee]);
+                console.log('\x1b[32m', `Updated employee's manager in the database.`, '\x1b[0m');
                 return askForCategory();
             } catch (err) {
                 console.log(err);
