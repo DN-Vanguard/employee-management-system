@@ -36,7 +36,6 @@ const selectDepartmentTable = async () => {
         console.log(err);
     }
 }
-
 // Checking department's budget (if selection was chosen)
 const selectDepartmentBudgetTable = async () => {
     let chooseDepartmentQuestions  = [];
@@ -67,7 +66,6 @@ const selectDepartmentBudgetTable = async () => {
             }
         });
 }
-
 // Adding a department to database
 const addDepartment = () => {
     inquirer
@@ -126,6 +124,7 @@ const askForDepartmentAction = () => {
             }
         });
 }
+
 // Takes a message, property name, and object array to create a list question
 const constructListQuestion = (message, name, objArray) => {
     return {
@@ -145,6 +144,7 @@ const selectRoleTable = async () => {
         console.log(err);
     }
 }
+
 // Adding a role to database
 const addRole = async () => {
     try {
@@ -169,4 +169,30 @@ const addRole = async () => {
                 console.log(err);
             }
         });    
+}
+// Remove a role
+const deleteRole = async () => {
+    let chooseRoleQuestions  = [];
+    try {
+        const table = await db.query(queries.roles);
+        let roleArray = table.map(role => ({
+            name: role.title,
+            value: role.id
+        }));
+        chooseRoleQuestions.push(constructListQuestion("Choose a role to delete", "role", roleArray));
+    } catch (err) {
+        console.log(err);
+    }
+    inquirer
+        .prompt(chooseRoleQuestions)
+        .then(async (choosenRole) => {
+            const role = choosenRole.role;
+            try {
+                await db.query(queries.delete('role'), role);
+                console.log('\x1b[33m', `Deleted role from the database.`, '\x1b[0m');
+                return askForCategory();
+            } catch (err) {
+                console.log(err);
+            }
+        });
 }
