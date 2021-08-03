@@ -1,8 +1,16 @@
-# Employee-Management-System
+# Employee Management System
 
 ## Description
+A terminal application to help manage a company's employee database.
+The user can navigate through the three categories: DEPARTMENTS, ROLES, AND EMPLOYEES.
+Utilizing node, the user can view tables, add information, update entries, or delete specific data points.
+It also allows the user to add new departments, roles, and employees as well as update an employee's role or manager.
+![Opening-Application](assets/Opening-Application.png)
 
-## Walkthrough Video
+## Usage
+After proper installation (see steps below), the app can be run using `node index.js` in the command line within the terminal.
+
+[Walkthough Video](https://youtu.be/_ce0wuGp1gQ)
 
 ## User Story
 
@@ -12,7 +20,7 @@ I WANT to be able to view and manage the departments, roles, and employees in my
 SO THAT I can organize and plan my business
 ```
 
-## Acceptance Criteria
+## Thought Process
 
 ```md
 GIVEN a command-line application that accepts user input
@@ -35,7 +43,7 @@ THEN I am prompted to select an employee to update and their new role and this i
 ```
 ## Installation
 
- `Node.js` is required on your local machine to run this app.
+`Node.js` is required on your local machine to run this app.
 You can then run it in VSCode and open an `integrated terminal` of the root folder.
 Before use, run `npm install` or `npm i` (for short) to load any dependencies such as Inquirer and mySQL2 to the folder.
 
@@ -45,9 +53,7 @@ To setup the database, login to the MySQL shell using `mysql -u root -p` and the
 
 You may use the `seeds.sql` file provided to populate example tables to the database or clear the database and add your own data.
 
-## Usage
 
-After installation, the app can be run using `node index.js` in the command line within the terminal.
 
 ## Technologies
 (See `package.json` file for more detail)
