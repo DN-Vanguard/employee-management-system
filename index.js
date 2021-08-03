@@ -196,3 +196,89 @@ const deleteRole = async () => {
             }
         });
 }
+// Ask the user for what action they want to take with roles (Almost identical with the department function)
+const askForRoleAction = () => {
+    inquirer
+        .prompt(questions.role)
+        .then((roleAnswer) => {
+            switch(roleAnswer.action) {
+                case "View All Roles":
+                    return selectRoleTable();
+                case "Add A Role":
+                    return addRole();
+                case "Delete A Role":
+                    return deleteRole();
+            }
+        });
+}
+
+// Viewing the data on the 'employee' table joined with department and role tables 
+const selectEmployeeTable = async () => {
+    try {
+        const table = await db.query(queries.employees()); 
+        viewTable(table);
+        return askForCategory();
+    } catch (err) {
+        console.log(err);
+    }
+}
+// View the data on the 'employee' table by manager joined with department and role tables 
+const selectEmployeeManagerTable = async () => {
+    let chooseEmployeeManagerQuestions = [];
+    try {
+        const managerTable = await db.query(queries.managers); 
+        let managerArray = managerTable.map(manager => ({
+            name: manager.name,
+            value: manager.id
+        }));
+        chooseEmployeeManagerQuestions.push(constructListQuestion("What manager's employees would you like to see?", "manager", managerArray));
+    } catch (err) {
+        console.log(err);
+    }
+    inquirer
+        .prompt(chooseEmployeeManagerQuestions)
+        .then(async (managerChoice) => {
+            const manager = managerChoice.manager;
+            try {
+                const table = await db.query(queries.employeesByManager(), manager); 
+                if(table.length === 0) {
+                    console.log('\x1b[32m', `This manager has no employees.`, '\x1b[0m');
+                } else {
+                    viewTable(table);
+                }
+                return askForCategory();
+            } catch (err) {
+                console.log(err);
+            }
+        });
+}
+// View the data on the 'employee' table by department joined with department and role tables 
+const selectEmployeeDepartmentTable = async () => {
+    let chooseEmployeeDepartmentQuestions = [];
+    try {
+        const deptTable = await db.query(queries.departments); 
+        let deptArray = deptTable.map(dept => ({
+            name: dept.name,
+            value: dept.id
+        }));
+        chooseEmployeeDepartmentQuestions.push(constructListQuestion("What department's employees would you like to see?", "department", deptArray));
+    } catch (err) {
+        console.log(err);
+    }
+    inquirer
+        .prompt(chooseEmployeeDepartmentQuestions)
+        .then(async (departmentChoice) => {
+            const department = departmentChoice.department;
+            try {
+                const table = await db.query(queries.employeesByDepartment(), department);
+                if(table.length === 0) {
+                    console.log('\x1b[32m', `This department has no employees.`, '\x1b[0m');
+                } else {
+                    viewTable(table);
+                }
+                return askForCategory();
+            } catch (err) {
+                console.log(err);
+            }
+        });
+}
