@@ -1,4 +1,4 @@
--- implying that the user has not yet created or have an employees_db, therefore, no need for DROP DATABASE IF EXIST
+DROP DATABASE IF EXISTS employees_db;
 CREATE DATABASE employees_db;
 USE employees_db;
 CREATE TABLE department (

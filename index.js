@@ -1,10 +1,11 @@
 // Required modules
 require('dotenv').config();
+const questions = require('./lib/questions');
+const queries = require('./lib/queries');
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const util = require('util');
-const questions = require('./lib/questions');
-const queries = require('./lib/queries');
+
 
 // Connect to the employees_db
 const db = mysql.createConnection(
