@@ -14,6 +14,7 @@ const db = mysql.createConnection(
       password: process.env.DB_PASS,
       database: 'employees_db'
     },
+    console.log(`Connected to employees_db database.`)
 );
 
 // Turn database queries into a promise
