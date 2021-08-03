@@ -412,3 +412,46 @@ const deleteEmployee = async () => {
             }
         });
 }
+
+// Ask the user for what action they want to take with employees
+const askForEmployeeAction = () => {
+    inquirer
+        .prompt(questions.employee)
+        .then((employeeAnswer) => {
+            switch(employeeAnswer.action) {
+                case "View All Employees":
+                    return selectEmployeeTable();
+                case "View Employees by Manager":
+                    return selectEmployeeManagerTable();
+                case "View Employees by Department":
+                    return selectEmployeeDepartmentTable();
+                case "Add An Employee":
+                    return addEmployee();
+                case "Update An Employee's Role":
+                    return updateEmployeeRole();
+                case "Update An Employee's Manager":
+                    return updateEmployeeManager();
+                case "Delete An Employee":
+                    return deleteEmployee();
+            }
+        });
+}
+// Ask the user what category of data they want to work with
+const askForCategory = () => {
+    inquirer
+        .prompt(questions.category)
+        .then((categoryAnswer) => {
+            switch(categoryAnswer.category) {
+                case "Departments":
+                    return askForDepartmentAction();
+                case "Roles":
+                    return askForRoleAction();
+                case "Employees":
+                    return askForEmployeeAction();
+                case "Quit":
+                    console.log('\x1b[34m', 'Goodbye!', '\x1b[0m');
+                    return db.end();
+            }
+        });
+}
+askForCategory();
