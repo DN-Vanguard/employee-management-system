@@ -386,3 +386,29 @@ const updateEmployeeManager = async () => {
             }
         });
 }
+// Remove an employee
+const deleteEmployee = async () => {
+    let chooseEmployeeQuestions  = [];
+    try {
+        const table = await db.query(queries.employeesByRole);
+        let employeeArray = table.map(employee => ({
+            name: employee.name,
+            value: employee.id
+        }));
+        chooseEmployeeQuestions.push(constructListQuestion("Choose an employee to delete", "employee", employeeArray));
+    } catch (err) {
+        console.log(err);
+    }
+    inquirer
+        .prompt(chooseEmployeeQuestions)
+        .then(async (choosenEmployee) => {
+            const employee = choosenEmployee.employee;
+            try {
+                await db.query(queries.delete('employee'), employee);
+                console.log('\x1b[33m', `Deleted employee from the database.`, '\x1b[0m');
+                return askForCategory();
+            } catch (err) {
+                console.log(err);
+            }
+        });
+}
